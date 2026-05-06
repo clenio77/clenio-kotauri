@@ -11,7 +11,6 @@ interface Settings {
   big_emoji_outline: boolean;
   theme: string;
   show_chat_id: boolean;
-  sidebar_folders: boolean;
   disable_up_edit: boolean;
   always_show_scheduled: boolean;
   forward_without_author: boolean;
@@ -161,15 +160,6 @@ export default function SettingsPanel({ onClose, onSettingsChange }: SettingsPan
                 type="checkbox"
                 checked={settings.compact_mode}
                 onChange={(e) => updateSetting("compact_mode", String(e.target.checked))}
-              />
-            </label>
-            
-            <label className="setting-item">
-              <span>Pastas na Lateral (Kotatogram)</span>
-              <input
-                type="checkbox"
-                checked={settings.sidebar_folders}
-                onChange={(e) => updateSetting("sidebar_folders", String(e.target.checked))}
               />
             </label>
 

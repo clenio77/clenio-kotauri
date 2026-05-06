@@ -21,7 +21,6 @@ pub struct SettingsData {
     pub sticker_height: u32,
     pub big_emoji_outline: bool,
     pub theme: String,
-    pub sidebar_folders: bool,
 
     // Chat
     pub show_chat_id: bool,
@@ -50,7 +49,6 @@ impl Default for SettingsData {
             sticker_height: 170,
             big_emoji_outline: true,
             theme: "default".to_string(),
-            sidebar_folders: true,
             show_chat_id: false,
             disable_up_edit: false,
             always_show_scheduled: false,
@@ -110,7 +108,6 @@ impl AppSettings {
                 "big_emoji_outline" => data.big_emoji_outline = value == "true",
                 "theme" => data.theme = value.to_string(),
                 "show_chat_id" => data.show_chat_id = value == "true",
-                "sidebar_folders" => data.sidebar_folders = value == "true",
                 "disable_up_edit" => data.disable_up_edit = value == "true",
                 "always_show_scheduled" => data.always_show_scheduled = value == "true",
                 "forward_without_author" => data.forward_without_author = value == "true",
@@ -244,99 +241,6 @@ impl AppSettings {
                     --message-in-background-color: #181818 !important;
                 }
             ");
-        }
-
-        // Sidebar folders (Kotatogram style)
-        if data.sidebar_folders {
-            let col = WebKSelectors::COLUMN_LEFT;
-            let folders_wrap = WebKSelectors::FOLDERS_CONTAINER_UNSTABLE;
-            css.push_str(&format!("
-                /* 1. Empurra TODOS os containers principais da coluna esquerda para a direita */
-                {col} .sidebar-header,
-                {col} .chatlist-parts,
-                {col} .connection-status-bottom {{
-                    transform: translateX(85px) !important;
-                    width: calc(100% - 85px) !important;
-                }}
-
-                /*
-                 * Sidebar header/hamburger stays above chat list stacking; clickable layer
-                 * for Web K (.btn-menu, toggles inside .sidebar-header).
-                 */
-                {col} .sidebar-header {{
-                    position: relative !important;
-                    z-index: 100000 !important;
-                    pointer-events: auto !important;
-                }}
-                
-                /* 2. O container original das abas não é transformado, então ele fica no espaço vazio de 85px! */
-                {col} .transition-item {{
-                    overflow: visible !important;
-                    z-index: 9999 !important;
-                }}
-                
-                {col} {folders_wrap} {{
-                    position: absolute !important;
-                    left: 0 !important;
-                    top: 0 !important;
-                    background: transparent !important;
-                    z-index: 9999 !important;
-                }}
-                
-                /* 4. As pastas ancoradas fisicamente na esquerda, agindo como máscara visual opaca */
-                .folders-tabs-scrollable {{
-                    position: fixed !important;
-                    left: 0 !important;
-                    top: 0 !important;
-                    width: 85px !important;
-                    height: 100vh !important;
-                    flex-direction: column !important;
-                    background: #17212b !important;
-                    border-right: 1px solid var(--border-color, rgba(0,0,0,0.2)) !important;
-                    z-index: 99999 !important;
-                    /*
-                     * Strip used to swallow all pointer events under its box (fixed + tall z-index),
-                     * blocking Telegram's main menu in the overlapping header strip. Let events
-                     * fall through except on real folder/tab controls.
-                     */
-                    pointer-events: none !important;
-                    overflow-y: auto !important;
-                    scrollbar-width: none !important;
-                    border-radius: 0 !important;
-                    padding-top: 10px !important;
-                    display: flex !important;
-                }}
-                .folders-tabs-scrollable .menu-horizontal-div,
-                .folders-tabs-scrollable .menu-horizontal-div-item,
-                .folders-tabs-scrollable a,
-                .folders-tabs-scrollable button {{
-                    pointer-events: auto !important;
-                }}
-                .folders-tabs-scrollable::-webkit-scrollbar {{ display: none !important; }}
-                
-                /* 5. Transforma em coluna nativamente */
-                .menu-horizontal-div {{
-                    display: flex !important;
-                    flex-direction: column !important;
-                    width: 100% !important;
-                }}
-                
-                /* 6. Estilo dos ícones Kotatogram */
-                .menu-horizontal-div-item {{
-                    width: 100% !important;
-                    height: auto !important;
-                    min-height: 64px !important;
-                    padding: 8px 4px !important;
-                    justify-content: center !important;
-                    align-items: center !important;
-                    flex-direction: column !important;
-                    font-size: 11px !important;
-                    flex-shrink: 0 !important;
-                    border-radius: 0 !important;
-                    text-align: center !important;
-                    white-space: pre-wrap !important;
-                }}
-            "));
         }
 
         css
