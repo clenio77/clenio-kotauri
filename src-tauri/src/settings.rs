@@ -264,7 +264,10 @@ impl AppSettings {
             (function() {{
                 if (!window._kotauri_chat_id_observer) {{
                     const ROOT_SEL = '{chat_root}';
+                    const CENTER_SEL = '{chat_center}';
                     const ROW_SELECTOR_LIST = '{chat_rows}';
+                    const HEADER_SELECTOR_LIST = '{chat_headers}';
+                    const DEBUG_ONCE_KEY = '_kotauri_chat_id_overlay_logged';
 
                     function normalizePeerId(v) {{
                         if (v === null || v === undefined) return null;
@@ -274,11 +277,29 @@ impl AppSettings {
 
                     function peerIdFromHref(href) {{
                         if (!href) return null;
-                        const m = String(href).match(/^#(-?\d+)$/);
+                        const m = String(href).match(/#(-?\d+)/);
                         return m ? m[1] : null;
                     }}
 
+                    function peerIdFromLocation() {{
+                        try {{
+                            const href = String(window.location.href || '');
+                            const hash = String(window.location.hash || '');
+                            let id = peerIdFromHref(hash);
+                            if (id) return id;
+                            id = peerIdFromHref(href);
+                            if (id) return id;
+                            const tgOpen = href.match(/tg:\/\/open\/?\?[^#]*peer(?:=|_id=)(-?\d+)/i);
+                            if (tgOpen) return tgOpen[1];
+                            const peerInQuery = href.match(/[?&](?:peer|peer_id|chat|dialog)=(-?\d+)/i);
+                            return peerInQuery ? peerInQuery[1] : null;
+                        }} catch (e) {{
+                            return null;
+                        }}
+                    }}
+
                     function tryReactPeerId(el) {{
+                        if (!el) return null;
                         const keys = Object.keys(el);
                         for (let i = 0; i < keys.length; i++) {{
                             const k = keys[i];
@@ -320,6 +341,33 @@ impl AppSettings {
                         return tryReactPeerId(row);
                     }}
 
+                    function extractActivePeerId(headerRoot) {{
+                        if (!headerRoot) return null;
+                        let id = normalizePeerId(headerRoot.getAttribute('data-peer-id'));
+                        if (id) return id;
+                        id = normalizePeerId(headerRoot.getAttribute('data-dialog-id'));
+                        if (id) return id;
+
+                        const attrEl = headerRoot.querySelector('[data-peer-id], [data-dialog-id]');
+                        if (attrEl) {{
+                            id = normalizePeerId(attrEl.getAttribute('data-peer-id'))
+                                || normalizePeerId(attrEl.getAttribute('data-dialog-id'));
+                            if (id) return id;
+                        }}
+
+                        const links = headerRoot.querySelectorAll('a[href*="#"], a[href*="peer"], a[href*="tg://open"]');
+                        for (let i = 0; i < links.length; i++) {{
+                            const href = links[i].getAttribute('href') || '';
+                            id = peerIdFromHref(href);
+                            if (id) return id;
+                        }}
+
+                        id = tryReactPeerId(headerRoot);
+                        if (id) return id;
+
+                        return peerIdFromLocation();
+                    }}
+
                     function collectChatRows() {{
                         const root = document.querySelector(ROOT_SEL) || document.body;
                         const rows = new Set();
@@ -339,6 +387,19 @@ impl AppSettings {
                             if (row && root.contains(row)) rows.add(row);
                         }});
                         return rows;
+                    }}
+
+                    function findActiveHeaderRoot() {{
+                        const center = document.querySelector(CENTER_SEL) || document.body;
+                        const selectors = HEADER_SELECTOR_LIST.split(',').map(function(s) {{ return s.trim(); }}).filter(Boolean);
+                        for (let i = 0; i < selectors.length; i++) {{
+                            const sel = selectors[i];
+                            try {{
+                                const hit = center.querySelector(sel) || document.querySelector(sel);
+                                if (hit) return hit;
+                            }} catch (e) {{}}
+                        }}
+                        return null;
                     }}
 
                     function ensurePositioned(row) {{
@@ -362,25 +423,78 @@ impl AppSettings {
                         }});
                     }}
 
+                    function renderActiveChatId() {{
+                        const center = document.querySelector(CENTER_SEL) || document.body;
+                        center.querySelectorAll('.kotauri-active-chat-id').forEach(function(el) {{
+                            el.remove();
+                        }});
+
+                        const header = findActiveHeaderRoot();
+                        if (!header) return;
+
+                        const id = extractActivePeerId(header);
+                        if (!id) return;
+
+                        const host = header.querySelector('.chat-info') || header;
+                        const cs = window.getComputedStyle(host);
+                        if (cs.position === 'static' || cs.position === '') {{
+                            host.style.position = 'relative';
+                        }}
+
+                        const badge = document.createElement('span');
+                        badge.className = 'kotauri-active-chat-id';
+                        badge.textContent = 'ID ' + id;
+                        badge.style.cssText = 'display:inline-flex;align-items:center;margin-left:8px;padding:1px 6px;border-radius:999px;border:1px solid rgba(255,255,255,0.2);font-size:10px;line-height:1.3;color:rgba(255,255,255,0.78);background:rgba(0,0,0,0.25);pointer-events:none;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:0.02em;vertical-align:middle;';
+
+                        const title = host.querySelector('.title, .peer-title, .person-title, .chat-info-wrapper');
+                        if (title) {{
+                            title.appendChild(badge);
+                        }} else {{
+                            host.appendChild(badge);
+                        }}
+                    }}
+
+                    function scanAll() {{
+                        scanChatIds();
+                        renderActiveChatId();
+                    }}
+
                     let scheduled = null;
                     function scheduleScan() {{
                         if (scheduled !== null) return;
                         scheduled = window.requestAnimationFrame(function() {{
                             scheduled = null;
-                            scanChatIds();
+                            scanAll();
                         }});
                     }}
 
                     const obsRoot = document.querySelector(ROOT_SEL) || document.body;
                     window._kotauri_chat_id_observer = new MutationObserver(scheduleScan);
                     window._kotauri_chat_id_observer.observe(obsRoot, {{ childList: true, subtree: true }});
+
+                    const centerRoot = document.querySelector(CENTER_SEL) || document.body;
+                    window._kotauri_active_chat_id_observer = new MutationObserver(scheduleScan);
+                    window._kotauri_active_chat_id_observer.observe(centerRoot, {{ childList: true, subtree: true, attributes: true }});
+
+                    window._kotauri_chat_id_hash_listener = function() {{
+                        scheduleScan();
+                    }};
+                    window.addEventListener('hashchange', window._kotauri_chat_id_hash_listener, true);
+
+                    if (!window[DEBUG_ONCE_KEY]) {{
+                        window[DEBUG_ONCE_KEY] = true;
+                        console.info('[KoTauri] chat id overlay active');
+                    }}
+
                     scheduleScan();
                     window._kotauri_chat_id_interval = window.setInterval(scheduleScan, 2500);
                 }}
             }})();
             "##,
                 chat_root = WebKSelectors::COLUMN_LEFT,
+                chat_center = WebKSelectors::COLUMN_CENTER,
                 chat_rows = WebKSelectors::CHAT_ROW_SELECTORS,
+                chat_headers = WebKSelectors::ACTIVE_CHAT_HEADER_SELECTORS,
             ));
         } else {
             js.push_str(r#"
@@ -393,7 +507,16 @@ impl AppSettings {
                     window._kotauri_chat_id_observer.disconnect();
                     window._kotauri_chat_id_observer = null;
                 }
+                if (window._kotauri_active_chat_id_observer) {
+                    window._kotauri_active_chat_id_observer.disconnect();
+                    window._kotauri_active_chat_id_observer = null;
+                }
+                if (window._kotauri_chat_id_hash_listener) {
+                    window.removeEventListener('hashchange', window._kotauri_chat_id_hash_listener, true);
+                    window._kotauri_chat_id_hash_listener = null;
+                }
                 document.querySelectorAll('.kotauri-chat-id').forEach(el => el.remove());
+                document.querySelectorAll('.kotauri-active-chat-id').forEach(el => el.remove());
             })();
             "#);
         }

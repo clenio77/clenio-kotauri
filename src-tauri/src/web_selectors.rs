@@ -5,10 +5,13 @@ pub struct WebKSelectors;
 
 impl WebKSelectors {
     pub const COLUMN_LEFT: &'static str = "#column-left";
+    pub const COLUMN_CENTER: &'static str = "#column-center";
     pub const CHAT_LIST_CHAT: &'static str = ".chatlist-chat";
     /// Seletores de linha na lista de chats (Web K). Vários padrões — DOM pode mudar entre builds.
     pub const CHAT_ROW_SELECTORS: &'static str =
         ".chatlist-chat, .chat-list-item, li.chatlist-chat, .chatlist-chat.row-clickable-hover";
+    /// Seletores defensivos para o cabeçalho do chat ativo (coluna central).
+    pub const ACTIVE_CHAT_HEADER_SELECTORS: &'static str = ".chat-info, .topbar, #column-center .chat-info, #column-center .topbar, #column-center [data-peer-id]";
     pub const SIDEBAR_FALLBACK: &'static str = ".sidebar";
 }
 
@@ -39,7 +42,9 @@ mod tests {
     #[test]
     fn selectors_non_empty() {
         assert!(WebKSelectors::COLUMN_LEFT.starts_with('#'));
+        assert!(WebKSelectors::COLUMN_CENTER.starts_with('#'));
         assert!(WebKSelectors::CHAT_LIST_CHAT.starts_with('.'));
         assert!(WebKSelectors::CHAT_ROW_SELECTORS.contains("chatlist-chat"));
+        assert!(WebKSelectors::ACTIVE_CHAT_HEADER_SELECTORS.contains("chat-info"));
     }
 }
