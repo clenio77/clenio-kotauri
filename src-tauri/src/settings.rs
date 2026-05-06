@@ -258,6 +258,16 @@ impl AppSettings {
                     transform: translateX(85px) !important;
                     width: calc(100% - 85px) !important;
                 }}
+
+                /*
+                 * Sidebar header/hamburger stays above chat list stacking; clickable layer
+                 * for Web K (.btn-menu, toggles inside .sidebar-header).
+                 */
+                {col} .sidebar-header {{
+                    position: relative !important;
+                    z-index: 100000 !important;
+                    pointer-events: auto !important;
+                }}
                 
                 /* 2. O container original das abas não é transformado, então ele fica no espaço vazio de 85px! */
                 {col} .transition-item {{
@@ -284,11 +294,23 @@ impl AppSettings {
                     background: #17212b !important;
                     border-right: 1px solid var(--border-color, rgba(0,0,0,0.2)) !important;
                     z-index: 99999 !important;
+                    /*
+                     * Strip used to swallow all pointer events under its box (fixed + tall z-index),
+                     * blocking Telegram's main menu in the overlapping header strip. Let events
+                     * fall through except on real folder/tab controls.
+                     */
+                    pointer-events: none !important;
                     overflow-y: auto !important;
                     scrollbar-width: none !important;
                     border-radius: 0 !important;
                     padding-top: 10px !important;
                     display: flex !important;
+                }}
+                .folders-tabs-scrollable .menu-horizontal-div,
+                .folders-tabs-scrollable .menu-horizontal-div-item,
+                .folders-tabs-scrollable a,
+                .folders-tabs-scrollable button {{
+                    pointer-events: auto !important;
                 }}
                 .folders-tabs-scrollable::-webkit-scrollbar {{ display: none !important; }}
                 
