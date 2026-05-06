@@ -1,0 +1,78 @@
+/* KoTauri — Global Styles */
+
+:root {
+  --kt-bg: #0e0e12;
+  --kt-surface: #1a1a24;
+  --kt-surface-hover: #24243a;
+  --kt-primary: #6C5CE7;
+  --kt-primary-glow: rgba(108, 92, 231, 0.25);
+  --kt-accent: #0984E3;
+  --kt-text: #e4e4f0;
+  --kt-text-muted: #8888aa;
+  --kt-border: #2a2a42;
+  --kt-success: #00b894;
+  --kt-danger: #e74c3c;
+  --kt-radius: 12px;
+  --kt-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --kt-font: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--kt-font);
+  background: var(--kt-bg);
+  color: var(--kt-text);
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+}
+
+.app-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Telegram Web iframe — fills entire window */
+.telegram-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: var(--kt-bg);
+}
+
+/* Floating settings button */
+.settings-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, var(--kt-primary), var(--kt-accent));
+  color: white;
+  font-size: 22px;
+  cursor: pointer;
+  box-shadow: var(--kt-shadow), 0 0 20px var(--kt-primary-glow);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.settings-fab:hover {
+  transform: scale(1.1) rotate(15deg);
+  box-shadow: var(--kt-shadow), 0 0 30px var(--kt-primary-glow);
+}
+
+.settings-fab:active {
+  transform: scale(0.95);
+}

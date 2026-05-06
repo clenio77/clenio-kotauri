@@ -1,0 +1,11 @@
+{
+  "identifier": "main",
+  "description": "Comandos do app",
+  "commands": [
+    "open_settings",
+    "get_settings",
+    "update_setting",
+    "get_injection_css",
+    "get_injection_js"
+  ]
+}
