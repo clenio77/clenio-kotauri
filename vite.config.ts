@@ -3,8 +3,10 @@ import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 
 const host = process.env.TAURI_DEV_HOST;
+const basePath = process.env.VITE_BASE_PATH || "/";
 
 export default defineConfig(async () => ({
+  base: basePath,
   plugins: [
     react(),
     VitePWA({
@@ -17,7 +19,7 @@ export default defineConfig(async () => ({
         theme_color: "#0e0e12",
         background_color: "#0e0e12",
         display: "standalone",
-        start_url: "/",
+        start_url: basePath,
         icons: [
           {
             src: "icon.svg",
@@ -28,7 +30,7 @@ export default defineConfig(async () => ({
         ],
       },
       workbox: {
-        navigateFallback: "/index.html",
+        navigateFallback: `${basePath}index.html`,
         globPatterns: ["**/*.{js,css,html,svg,png,ico,webp}"],
         runtimeCaching: [
           {
