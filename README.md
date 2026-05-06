@@ -52,6 +52,20 @@ Scripts úteis no `package.json`:
 - `npm run build` — `tsc` + build de produção Vite (`dist/`).
 - `npm run tauri` — CLI do Tauri (ex.: `npm run tauri build`).
 
+## PWA (mobile/web)
+
+O frontend também pode rodar como app web instalável (PWA), sem alterar o fluxo desktop em Tauri.
+
+```bash
+npm install
+npm run dev
+```
+
+- Abra a URL do Vite no navegador do celular (ou via túnel/rede local) para testar a tela mobile/web.
+- Toque em **Open Telegram Web K** para abrir `https://web.telegram.org/k/` na mesma aba.
+- Use a opção do navegador (**Add to Home screen** / **Install app**) para instalar o PWA.
+- Build de produção do PWA (arquivos em `dist/`): `npm run build`.
+
 ## Build
 
 ```bash

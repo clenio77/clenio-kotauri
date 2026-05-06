@@ -39,6 +39,44 @@ body {
   overflow: hidden;
 }
 
+.web-shell {
+  min-height: 100vh;
+  padding: 28px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.web-shell h1 {
+  font-size: 2rem;
+}
+
+.web-shell-description {
+  color: var(--kt-text-muted);
+  line-height: 1.5;
+}
+
+.web-shell-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 20px;
+  border-radius: var(--kt-radius);
+  text-decoration: none;
+  color: white;
+  background: linear-gradient(135deg, var(--kt-primary), var(--kt-accent));
+  box-shadow: 0 10px 30px var(--kt-primary-glow);
+  font-weight: 600;
+}
+
+.web-shell-install-tip {
+  color: var(--kt-text-muted);
+  font-size: 0.95rem;
+}
+
 /* Telegram Web iframe — fills entire window */
 .telegram-frame {
   width: 100%;
