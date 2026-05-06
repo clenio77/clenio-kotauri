@@ -332,25 +332,6 @@ impl AppSettings {
 
         let mut js = String::new();
 
-        js.push_str(r#"
-            (function() {
-                console.log("KoTauri: Injecting UI...");
-                let btn = document.getElementById("kotauri-gear-btn");
-                if (!btn) {
-                    btn = document.createElement("button");
-                    btn.id = "kotauri-gear-btn";
-                    btn.innerHTML = "⚙";
-                    btn.style.cssText = "position:fixed;bottom:20px;right:20px;z-index:9999;width:44px;height:44px;border-radius:50%;background:#6C5CE7;color:white;border:none;cursor:pointer;font-size:22px;box-shadow:0 4px 12px rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;transition:transform 0.2s;";
-                    btn.onclick = () => {
-                        if (window.kotauri && window.kotauri.openSettings) {
-                            window.kotauri.openSettings();
-                        }
-                    };
-                    document.body.appendChild(btn);
-                }
-            })();
-        "#);
-
         if show_chat_id {
             js.push_str(&format!(
                 r##"
