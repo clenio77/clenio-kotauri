@@ -243,6 +243,133 @@ impl AppSettings {
             ");
         }
 
+        // Kotatogram Layout (Preencher melhor o espaço da tela)
+        css.push_str("
+            /* --- REMOVER MARGENS LATERAIS (FULL WIDTH DEFINITIVE) --- */
+            :root, html, body, #root, .root, .Layout, .layout, .app, #app-container,
+            .page-container, .main-layout, .columns-container, .Layout-main,
+            .middle-column, .view-container, .Main, .main {
+                width: 100% !important;
+                max-width: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+            }
+
+            /* --- LAYOUT DE COLUNAS --- */
+            #column-left {
+                width: 380px !important;
+                max-width: 500px !important;
+                flex: 0 0 380px !important;
+                transition: width 0.1s ease-in-out !important;
+                border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+                display: flex !important;
+                flex-direction: column !important;
+                /* Removido z-index fixo que cobria menus */
+            }
+            
+            @media (min-width: 1200px) {
+                #column-left {
+                    width: 420px !important;
+                    flex: 0 0 420px !important;
+                }
+            }
+
+            #column-center {
+                flex: 1 !important;
+                max-width: none !important;
+                width: 100% !important;
+                display: flex !important;
+                flex-direction: column !important;
+            }
+            
+            /* Ajuste da sidebar lateral esquerda */
+            .sidebar {
+                width: 68px !important;
+                min-width: 68px !important;
+                flex: 0 0 68px !important;
+                background-color: var(--surface-color, #17212b) !important;
+            }
+
+            /* --- FIX MENUS E POPUPS --- */
+            .Menu, .Dropdown, .popup, .modal, .Menu-item {
+                z-index: 9999 !important;
+            }
+
+            /* --- LISTA DE CHATS --- */
+            .chatlist-chat {
+                height: 72px !important;
+                padding: 8px 12px !important;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important;
+            }
+            
+            .chatlist-chat .info {
+                margin-left: 14px !important;
+                flex: 1 !important;
+                min-width: 0 !important;
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: center !important;
+            }
+            
+            .chatlist-chat .title-row, .chatlist-chat .dialog-title {
+                display: flex !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+                width: 100% !important;
+                gap: 8px !important;
+            }
+            
+            .chatlist-chat .subtitle-row, .chatlist-chat .dialog-subtitle-row {
+                display: flex !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+                width: 100% !important;
+                gap: 8px !important;
+            }
+
+            .chatlist-chat .user-title {
+                font-weight: 600 !important;
+                font-size: 1rem !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+                white-space: nowrap !important;
+                flex: 1 !important;
+            }
+            
+            .chatlist-chat .last-message, .chatlist-chat .dialog-subtitle {
+                font-size: 0.9rem !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+                white-space: nowrap !important;
+                flex: 1 !important;
+                opacity: 0.7 !important;
+            }
+
+            .chatlist-chat .chat-time, .chatlist-chat .dialog-title-details {
+                flex-shrink: 0 !important;
+                font-size: 0.8rem !important;
+                color: var(--secondary-text-color, #aab2bd) !important;
+            }
+
+            /* Barra de busca */
+            .search-input {
+                width: 100% !important;
+                height: 36px !important;
+                border-radius: 8px !important;
+            }
+
+            /* ID do Chat Injetado */
+            .kotauri-chat-id {
+                font-size: 8px !important;
+                opacity: 0.4 !important;
+                right: 4px !important;
+                bottom: 2px !important;
+                color: #ffffff !important;
+            }
+        ");
+
         css
     }
 
@@ -418,7 +545,7 @@ impl AppSettings {
                             const span = document.createElement('span');
                             span.className = 'kotauri-chat-id';
                             span.textContent = id;
-                            span.style.cssText = 'position:absolute;right:8px;bottom:2px;font-size:10px;line-height:1.2;color:rgba(255,255,255,0.45);z-index:10;pointer-events:none;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:0.02em;';
+                            span.style.cssText = 'position:absolute;right:10px;bottom:6px;font-size:9px;z-index:5;pointer-events:none;opacity:0.7;';
                             chat.appendChild(span);
                         }});
                     }}
