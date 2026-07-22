@@ -222,6 +222,13 @@
   transform: translateX(20px);
 }
 
+.setting-hint {
+  margin: 8px 14px 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--kt-text-muted);
+}
+
 /* Theme grid */
 .theme-grid {
   display: grid;

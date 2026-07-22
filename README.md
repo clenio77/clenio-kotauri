@@ -15,7 +15,8 @@ O **KoTauri** separa duas superfícies: uma janela principal em WebView que carr
 - **Telegram Web K embutido**: janela principal apontando para `https://web.telegram.org/k/`, com script inicial que expõe `window.kotauri.openSettings` e navegação interceptada para abrir as configurações locais.
 - **Painel de configurações**: UI React na janela “KoTauri Settings” (oculta por padrão); comandos Tauri `get_settings`, `update_setting` e `open_settings`.
 - **Injeção dinâmica**: CSS e JS aplicados na página carregada (temas como Midnight/Nord/Catppuccin, modo compacto, fonte e tamanho, bolhas adaptáveis, altura de stickers, barra lateral de pastas estilo Kotatogram, exibição opcional de ID do chat, entre outras opções definidas em `settings.rs` / painel).
-- **Bandeja e comportamento de janela**: menu da bandeja (mostrar Telegram, configurações, sair); opção de minimizar para bandeja em vez de fechar; opção de iniciar minimizado (Linux: permissões de mídia tratadas no WebKit quando aplicável).
+- **Bandeja e comportamento de janela**: menu da bandeja (mostrar Telegram, configurações, sair); botão ⚙ flutuante na WebView; opção de minimizar para bandeja em vez de fechar; opção de iniciar minimizado (Linux: permissões de mídia tratadas no WebKit quando aplicável).
+- **Downloads nativos**: arquivos baixados pelo Telegram Web K vão para a pasta Downloads do sistema (com nomes únicos se já existirem).
 - **Integração**: `tauri-plugin-shell` para abrir URLs no sistema.
 
 ## Stack
@@ -27,7 +28,7 @@ O **KoTauri** separa duas superfícies: uma janela principal em WebView que carr
 | Persistência | JSON (`serde` / `serde_json`), diretório `kotauri` sob o config do usuário |
 | Tooling | `@tauri-apps/cli` ^2, TypeScript ~5.8 |
 
-Versão do projeto: **0.1.2** (veja `package.json` e `src-tauri/tauri.conf.json`).
+Versão do projeto: **0.1.3** (veja `package.json` e `src-tauri/tauri.conf.json`).
 
 ## Pré-requisitos
 

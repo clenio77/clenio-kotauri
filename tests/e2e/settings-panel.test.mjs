@@ -86,4 +86,21 @@ describe("settings panel (mock Tauri)", () => {
     const settings = await readMockSettings(page);
     assert.equal(settings.theme, "catppuccin");
   });
+
+  it("não mostra toggles legados sem implementação", async () => {
+    const text = await page.$eval('[data-testid="settings-panel"]', (el) =>
+      el.textContent || ""
+    );
+    assert.equal(text.includes("Encaminhar sem autor"), false);
+    assert.equal(text.includes("Desabilitar edição com ↑"), false);
+    assert.equal(text.includes("mensagens agendadas"), false);
+    assert.match(text, /Downloads do Telegram/);
+  });
+
+  it("fecha settings via hide_settings", async () => {
+    await page.click('[data-testid="settings-close"]');
+    await page.waitForFunction(() => window.__kotauriTest?.hidden === true, {
+      timeout: 5000,
+    });
+  });
 });

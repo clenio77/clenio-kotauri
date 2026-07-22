@@ -9,7 +9,9 @@ use tauri::{
 use crate::settings::AppSettings;
 
 pub mod clipboard_image;
+pub mod downloads;
 pub mod settings;
+pub mod ui_chrome;
 pub mod web_selectors;
 
 /// Primeira carga do Web K: várias tentativas espaçadas (SPA substitui o DOM).
@@ -38,6 +40,14 @@ fn show_settings_window(app: &tauri::AppHandle) -> Result<(), String> {
 #[tauri::command]
 fn open_settings(app: tauri::AppHandle) -> Result<(), String> {
     show_settings_window(&app)
+}
+
+#[tauri::command]
+fn hide_settings(app: tauri::AppHandle) -> Result<(), String> {
+    if let Some(window) = app.get_webview_window("settings") {
+        window.hide().map_err(|e| e.to_string())?;
+    }
+    Ok(())
 }
 
 #[tauri::command]
@@ -90,7 +100,12 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
         .manage(app_settings)
-        .invoke_handler(tauri::generate_handler![open_settings, get_settings, update_setting])
+        .invoke_handler(tauri::generate_handler![
+            open_settings,
+            hide_settings,
+            get_settings,
+            update_setting
+        ])
         .setup(move |app| {
             if let Some(settings_win) = app.get_webview_window("settings") {
                 let win_clone = settings_win.clone();
@@ -113,6 +128,7 @@ pub fn run() {
             .inner_size(1200.0, 800.0)
             // Telegram Web K usa Clipboard API para colar texto/imagens de outros apps.
             .enable_clipboard_access()
+            .on_download(crate::downloads::on_download)
             .initialization_script(
                 "
                 window.kotauri = {
@@ -290,6 +306,10 @@ fn inject_to_main(app: &tauri::AppHandle) {
         // Bridge de imagem do clipboard (idempotente).
         if let Err(e) = window.eval(crate::clipboard_image::clipboard_image_bridge_js()) {
             eprintln!("[KoTauri] falha ao instalar clipboard-image bridge: {e}");
+        }
+        // Botão ⚙ de configurações (idempotente).
+        if let Err(e) = window.eval(crate::ui_chrome::settings_gear_js()) {
+            eprintln!("[KoTauri] falha ao instalar settings gear: {e}");
         }
     } else {
         println!("[KoTauri] janela 'main' não encontrada.");

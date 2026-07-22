@@ -24,11 +24,17 @@ pub struct SettingsData {
 
     // Chat
     pub show_chat_id: bool,
+    /// Mantido no JSON por compatibilidade; sem efeito (removido da UI).
+    #[serde(default)]
     pub disable_up_edit: bool,
+    /// Mantido no JSON por compatibilidade; sem efeito (removido da UI).
+    #[serde(default)]
     pub always_show_scheduled: bool,
 
-    // Forward
+    // Forward (legado — sem implementação)
+    #[serde(default)]
     pub forward_without_author: bool,
+    #[serde(default)]
     pub forward_retain_selection: bool,
 
     // System

@@ -30,6 +30,10 @@ export async function installTauriMock(page, settings = DEFAULT_SETTINGS) {
         if (cmd === "open_settings") {
           return Promise.resolve(null);
         }
+        if (cmd === "hide_settings") {
+          window.__kotauriTest.hidden = true;
+          return Promise.resolve(null);
+        }
         return Promise.reject(new Error(`[kotauri-e2e] comando não mockado: ${cmd}`));
       },
       transformCallback(callback) {

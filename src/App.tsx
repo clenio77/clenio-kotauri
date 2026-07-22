@@ -1,3 +1,4 @@
+import { invoke } from "@tauri-apps/api/core";
 import SettingsPanel from "./components/SettingsPanel";
 import "./styles/global.css";
 
@@ -33,17 +34,21 @@ function App() {
   }
 
   const handleSettingsChange = () => {
-    // In Tauri, the main window will refresh its injections 
-    // when it gains focus, so we don't need explicit logic here.
     console.log("Settings updated");
+  };
+
+  const handleClose = async () => {
+    try {
+      await invoke("hide_settings");
+    } catch (e) {
+      console.error("hide_settings failed:", e);
+    }
   };
 
   return (
     <div className="app-container">
       <SettingsPanel
-        onClose={() => {
-          // The window close button handles this
-        }}
+        onClose={handleClose}
         onSettingsChange={handleSettingsChange}
       />
     </div>

@@ -8,13 +8,8 @@ interface Settings {
   compact_mode: boolean;
   adaptive_bubbles: boolean;
   sticker_height: number;
-  big_emoji_outline: boolean;
   theme: string;
   show_chat_id: boolean;
-  disable_up_edit: boolean;
-  always_show_scheduled: boolean;
-  forward_without_author: boolean;
-  forward_retain_selection: boolean;
   minimize_to_tray: boolean;
   start_minimized: boolean;
 }
@@ -108,7 +103,7 @@ export default function SettingsPanel({ onClose, onSettingsChange }: SettingsPan
         data-testid="settings-panel"
       >
         <div className="settings-header">
-          <h2>⚙ KoTauri Settings</h2>
+          <h2>KoTauri Settings</h2>
           <button className="close-btn" onClick={onClose} data-testid="settings-close" aria-label="Close settings">
             ✕
           </button>
@@ -135,9 +130,8 @@ export default function SettingsPanel({ onClose, onSettingsChange }: SettingsPan
         )}
 
         <div className="settings-content">
-          {/* Appearance */}
           <section className="settings-section">
-            <h3>🎨 Aparência</h3>
+            <h3>Aparência</h3>
 
             <label className="setting-item">
               <span>Fonte customizada</span>
@@ -190,9 +184,8 @@ export default function SettingsPanel({ onClose, onSettingsChange }: SettingsPan
             </label>
           </section>
 
-          {/* Themes */}
           <section className="settings-section">
-            <h3>🌙 Tema</h3>
+            <h3>Tema</h3>
             <div className="theme-grid">
               {THEMES.map((t) => (
                 <button
@@ -208,9 +201,8 @@ export default function SettingsPanel({ onClose, onSettingsChange }: SettingsPan
             </div>
           </section>
 
-          {/* Chat */}
           <section className="settings-section">
-            <h3>💬 Chat</h3>
+            <h3>Chat</h3>
 
             <label className="setting-item">
               <span>Mostrar Chat ID</span>
@@ -220,52 +212,10 @@ export default function SettingsPanel({ onClose, onSettingsChange }: SettingsPan
                 onChange={(e) => updateSetting("show_chat_id", String(e.target.checked))}
               />
             </label>
-
-            <label className="setting-item">
-              <span>Desabilitar edição com ↑</span>
-              <input
-                type="checkbox"
-                checked={settings.disable_up_edit}
-                onChange={(e) => updateSetting("disable_up_edit", String(e.target.checked))}
-              />
-            </label>
-
-            <label className="setting-item">
-              <span>Sempre mostrar mensagens agendadas</span>
-              <input
-                type="checkbox"
-                checked={settings.always_show_scheduled}
-                onChange={(e) => updateSetting("always_show_scheduled", String(e.target.checked))}
-              />
-            </label>
           </section>
 
-          {/* Forward */}
           <section className="settings-section">
-            <h3>↗️ Encaminhamento</h3>
-
-            <label className="setting-item">
-              <span>Encaminhar sem autor</span>
-              <input
-                type="checkbox"
-                checked={settings.forward_without_author}
-                onChange={(e) => updateSetting("forward_without_author", String(e.target.checked))}
-              />
-            </label>
-
-            <label className="setting-item">
-              <span>Manter seleção após encaminhar</span>
-              <input
-                type="checkbox"
-                checked={settings.forward_retain_selection}
-                onChange={(e) => updateSetting("forward_retain_selection", String(e.target.checked))}
-              />
-            </label>
-          </section>
-
-          {/* System */}
-          <section className="settings-section">
-            <h3>🖥️ Sistema</h3>
+            <h3>Sistema</h3>
 
             <label className="setting-item">
               <span>Minimizar para bandeja</span>
@@ -284,11 +234,15 @@ export default function SettingsPanel({ onClose, onSettingsChange }: SettingsPan
                 onChange={(e) => updateSetting("start_minimized", String(e.target.checked))}
               />
             </label>
+
+            <p className="setting-hint" data-testid="downloads-hint">
+              Downloads do Telegram vão para a pasta Downloads do sistema.
+            </p>
           </section>
         </div>
 
         <div className="settings-footer">
-          <span className="version">KoTauri v0.1.2</span>
+          <span className="version">KoTauri v0.1.3</span>
         </div>
       </div>
     </div>
