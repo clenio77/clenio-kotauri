@@ -23,13 +23,23 @@
   box-sizing: border-box;
 }
 
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  min-height: 100dvh;
+}
+
 body {
   font-family: var(--kt-font);
-  background: var(--kt-bg);
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(108, 92, 231, 0.22), transparent 55%),
+    radial-gradient(900px 500px at 100% 0%, rgba(9, 132, 227, 0.16), transparent 50%),
+    var(--kt-bg);
   color: var(--kt-text);
-  overflow: hidden;
-  width: 100vw;
-  height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .app-container {
@@ -40,41 +50,148 @@ body {
 }
 
 .web-shell {
-  min-height: 100vh;
-  padding: 28px 20px;
+  min-height: 100dvh;
+  padding:
+    max(28px, env(safe-area-inset-top))
+    max(20px, env(safe-area-inset-right))
+    max(28px, env(safe-area-inset-bottom))
+    max(20px, env(safe-area-inset-left));
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 16px;
-  max-width: 520px;
+  gap: 20px;
+  max-width: 420px;
   margin: 0 auto;
 }
 
-.web-shell h1 {
-  font-size: 2rem;
+.web-shell-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
 }
 
-.web-shell-description {
+.web-shell-logo {
+  border-radius: 18px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+}
+
+.web-shell h1 {
+  font-size: clamp(2.2rem, 8vw, 2.8rem);
+  font-weight: 750;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
+.web-shell-tagline {
   color: var(--kt-text-muted);
-  line-height: 1.5;
+  font-size: 1.05rem;
+  line-height: 1.4;
+}
+
+.web-shell-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .web-shell-cta {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  min-height: 52px;
   padding: 14px 20px;
-  border-radius: var(--kt-radius);
+  border-radius: 14px;
+  border: none;
   text-decoration: none;
   color: white;
   background: linear-gradient(135deg, var(--kt-primary), var(--kt-accent));
   box-shadow: 0 10px 30px var(--kt-primary-glow);
-  font-weight: 600;
+  font-weight: 650;
+  font-size: 1.05rem;
+  font-family: inherit;
+  cursor: pointer;
 }
 
-.web-shell-install-tip {
+.web-shell-cta-secondary {
+  background: transparent;
+  color: var(--kt-text);
+  border: 1px solid var(--kt-border);
+  box-shadow: none;
+}
+
+.web-shell-cta-secondary:hover {
+  background: var(--kt-surface-hover);
+}
+
+.web-shell-install-tip,
+.web-shell-mode {
   color: var(--kt-text-muted);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.web-shell-countdown {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--kt-border);
+  color: var(--kt-text);
   font-size: 0.95rem;
+}
+
+.web-shell-linkish {
+  border: none;
+  background: none;
+  color: var(--kt-accent);
+  font: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.web-shell-ios-tip {
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--kt-border);
+  color: var(--kt-text);
+  font-size: 0.95rem;
+}
+
+.web-shell-ios-tip ol {
+  margin: 8px 0 0 1.1rem;
+  color: var(--kt-text-muted);
+  line-height: 1.5;
+}
+
+.web-shell-toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: var(--kt-text-muted);
+  font-size: 0.92rem;
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.web-shell-toggle input {
+  margin-top: 3px;
+  accent-color: var(--kt-primary);
+}
+
+@media (display-mode: standalone) {
+  body {
+    overflow: hidden;
+  }
+
+  .web-shell {
+    min-height: 100dvh;
+  }
 }
 
 /* Telegram Web iframe — fills entire window */

@@ -62,9 +62,10 @@ npm install
 npm run dev
 ```
 
-- Abra a URL do Vite no navegador do celular (ou via túnel/rede local) para testar a tela mobile/web.
-- Toque em **Open Telegram Web K** para abrir `https://web.telegram.org/k/` na mesma aba.
-- Use a opção do navegador (**Add to Home screen** / **Install app**) para instalar o PWA.
+- Abra a URL do Vite (ou [GitHub Pages](https://clenio77.github.io/clenio-kotauri/)) no celular.
+- Toque em **Abrir Telegram** para ir a `https://web.telegram.org/k/`.
+- Use **Instalar no celular** (Chrome/Edge) ou “Adicionar à Tela de Início” (iOS) para modo tela cheia.
+- No app instalado, o shell pode abrir o Telegram automaticamente (opção na tela inicial).
 - Build de produção do PWA (arquivos em `dist/`): `npm run build`.
 
 ## Build

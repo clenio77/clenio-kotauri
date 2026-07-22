@@ -1,8 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import SettingsPanel from "./components/SettingsPanel";
+import WebShell from "./components/WebShell";
 import "./styles/global.css";
-
-const TELEGRAM_WEB_K_URL = "https://web.telegram.org/k/";
 
 function isTauriRuntime() {
   if (typeof window === "undefined") return false;
@@ -11,26 +10,7 @@ function isTauriRuntime() {
 
 function App() {
   if (!isTauriRuntime()) {
-    return (
-      <main className="web-shell" data-testid="web-shell">
-        <h1>KoTauri Web</h1>
-        <p className="web-shell-description">
-          Open Telegram Web K and install this app from your browser menu for a
-          full-screen experience on phone.
-        </p>
-        <a
-          className="web-shell-cta"
-          href={TELEGRAM_WEB_K_URL}
-          data-testid="open-telegram-web-k"
-        >
-          Open Telegram Web K
-        </a>
-        <p className="web-shell-install-tip">
-          Install tip: in Chrome/Edge use "Add to Home screen" or "Install app"
-          from the browser menu.
-        </p>
-      </main>
-    );
+    return <WebShell />;
   }
 
   const handleSettingsChange = () => {
