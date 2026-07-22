@@ -110,6 +110,8 @@ pub fn run() {
             )
             .title("KoTauri — Telegram")
             .inner_size(1200.0, 800.0)
+            // Telegram Web K usa Clipboard API para colar texto/imagens de outros apps.
+            .enable_clipboard_access()
             .initialization_script(
                 "
                 window.kotauri = {
@@ -137,8 +139,14 @@ pub fn run() {
             {
                 main_window
                     .with_webview(|webview| {
-                        use webkit2gtk::{PermissionRequestExt, WebViewExt};
-                        webview.inner().connect_permission_request(|_, request| {
+                        use webkit2gtk::{PermissionRequestExt, SettingsExt, WebViewExt};
+                        let wv = webview.inner();
+                        if let Some(settings) = wv.settings() {
+                            // Mensagens de voz / getUserMedia no Telegram Web K.
+                            settings.set_enable_media_stream(true);
+                            settings.set_enable_mediasource(true);
+                        }
+                        wv.connect_permission_request(|_, request| {
                             request.allow();
                             true
                         });

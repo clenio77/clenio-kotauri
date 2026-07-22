@@ -101,11 +101,17 @@ export default function SettingsPanel({ onClose, onSettingsChange }: SettingsPan
   }
 
   return (
-    <div className="settings-overlay" onClick={onClose}>
-      <div className="settings-panel" onClick={(e) => e.stopPropagation()}>
+    <div className="settings-overlay" onClick={onClose} data-testid="settings-overlay">
+      <div
+        className="settings-panel"
+        onClick={(e) => e.stopPropagation()}
+        data-testid="settings-panel"
+      >
         <div className="settings-header">
           <h2>⚙ KoTauri Settings</h2>
-          <button className="close-btn" onClick={onClose}>✕</button>
+          <button className="close-btn" onClick={onClose} data-testid="settings-close" aria-label="Close settings">
+            ✕
+          </button>
         </div>
 
         {saveError && (

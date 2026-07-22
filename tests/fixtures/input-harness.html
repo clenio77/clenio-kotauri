@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KoTauri input harness</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        margin: 24px;
+        background: #0e0e12;
+        color: #f5f5f7;
+      }
+      #composer {
+        min-height: 80px;
+        border: 1px solid #444;
+        border-radius: 8px;
+        padding: 12px;
+        background: #1a1a22;
+        outline: none;
+      }
+      #composer:empty:before {
+        content: attr(data-placeholder);
+        color: #888;
+      }
+      .row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 16px 0;
+      }
+      button,
+      label.file {
+        background: #3390ec;
+        color: #fff;
+        border: 0;
+        border-radius: 8px;
+        padding: 8px 12px;
+        cursor: pointer;
+      }
+      #preview img {
+        max-width: 200px;
+        max-height: 200px;
+        display: block;
+        margin-top: 8px;
+      }
+      #status {
+        margin-top: 16px;
+        font-family: ui-monospace, monospace;
+        white-space: pre-wrap;
+        font-size: 13px;
+        opacity: 0.9;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Input harness</h1>
+    <p>
+      Simula o composer do Telegram Web K para validar texto colado, imagem e
+      microfone (mesmo contrato de APIs que a WebView precisa expor).
+    </p>
+
+    <div
+      id="composer"
+      contenteditable="true"
+      role="textbox"
+      data-testid="composer"
+      data-placeholder="Digite ou cole aqui…"
+    ></div>
+
+    <div class="row">
+      <button type="button" id="btn-paste-text" data-testid="paste-text">
+        Colar texto (Clipboard API)
+      </button>
+      <button type="button" id="btn-paste-image" data-testid="paste-image">
+        Colar imagem (Clipboard API)
+      </button>
+      <label class="file">
+        Anexar imagem
+        <input
+          id="file-input"
+          type="file"
+          accept="image/*"
+          hidden
+          data-testid="file-input"
+        />
+      </label>
+      <button type="button" id="btn-mic" data-testid="start-mic">
+        Iniciar microfone
+      </button>
+      <button type="button" id="btn-stop-mic" data-testid="stop-mic">
+        Parar microfone
+      </button>
+    </div>
+
+    <div id="preview" data-testid="preview"></div>
+    <pre id="status" data-testid="status">idle</pre>
+
+    <script>
+      const statusEl = document.getElementById("status");
+      const composer = document.getElementById("composer");
+      const preview = document.getElementById("preview");
+      let mediaStream = null;
+
+      function setStatus(payload) {
+        const text =
+          typeof payload === "string" ? payload : JSON.stringify(payload, null, 2);
+        statusEl.textContent = text;
+        window.__harness = {
+          ...(window.__harness || {}),
+          lastStatus: payload,
+          composerText: composer.innerText,
+          hasImage: Boolean(preview.querySelector("img")),
+          micActive: Boolean(mediaStream),
+        };
+      }
+
+      window.__harness = {
+        lastStatus: "idle",
+        composerText: "",
+        hasImage: false,
+        micActive: false,
+      };
+
+      function appendImage(blob) {
+        const url = URL.createObjectURL(blob);
+        const img = document.createElement("img");
+        img.src = url;
+        img.alt = "pasted-or-attached";
+        img.dataset.testid = "attached-image";
+        preview.replaceChildren(img);
+      }
+
+      // Buffer de clipboard para e2e quando o SO/headless bloqueia write.
+      window.__testClipboard = { text: null, imageBlob: null };
+
+      document.getElementById("btn-paste-text").onclick = async () => {
+        try {
+          let text = window.__testClipboard.text;
+          if (text == null) {
+            text = await navigator.clipboard.readText();
+          }
+          composer.focus();
+          document.execCommand("insertText", false, text);
+          setStatus({ ok: true, kind: "paste-text", text });
+        } catch (err) {
+          setStatus({ ok: false, kind: "paste-text", error: String(err) });
+        }
+      };
+
+      document.getElementById("btn-paste-image").onclick = async () => {
+        try {
+          if (window.__testClipboard.imageBlob) {
+            const blob = window.__testClipboard.imageBlob;
+            appendImage(blob);
+            setStatus({
+              ok: true,
+              kind: "paste-image",
+              type: blob.type || "image/png",
+              size: blob.size,
+            });
+            return;
+          }
+          const items = await navigator.clipboard.read();
+          for (const item of items) {
+            const type = item.types.find((t) => t.startsWith("image/"));
+            if (!type) continue;
+            const blob = await item.getType(type);
+            appendImage(blob);
+            setStatus({ ok: true, kind: "paste-image", type, size: blob.size });
+            return;
+          }
+          setStatus({ ok: false, kind: "paste-image", error: "no image in clipboard" });
+        } catch (err) {
+          setStatus({ ok: false, kind: "paste-image", error: String(err) });
+        }
+      };
+
+      document.getElementById("file-input").onchange = (ev) => {
+        const file = ev.target.files && ev.target.files[0];
+        if (!file) {
+          setStatus({ ok: false, kind: "file", error: "no file" });
+          return;
+        }
+        appendImage(file);
+        setStatus({
+          ok: true,
+          kind: "file",
+          name: file.name,
+          type: file.type,
+          size: file.size,
+        });
+      };
+
+      document.getElementById("btn-mic").onclick = async () => {
+        try {
+          mediaStream = await navigator.mediaDevices.getUserMedia({
+            audio: true,
+            video: false,
+          });
+          setStatus({
+            ok: true,
+            kind: "mic",
+            tracks: mediaStream.getAudioTracks().map((t) => t.label || t.kind),
+          });
+        } catch (err) {
+          setStatus({ ok: false, kind: "mic", error: String(err) });
+        }
+      };
+
+      document.getElementById("btn-stop-mic").onclick = () => {
+        if (mediaStream) {
+          mediaStream.getTracks().forEach((t) => t.stop());
+          mediaStream = null;
+        }
+        setStatus({ ok: true, kind: "mic-stop" });
+      };
+
+      // Probe de capacidades (contrato da WebView)
+      setStatus({
+        ok: true,
+        kind: "probe",
+        clipboard: Boolean(navigator.clipboard && navigator.clipboard.read),
+        mediaDevices: Boolean(navigator.mediaDevices && navigator.mediaDevices.getUserMedia),
+        isSecureContext: window.isSecureContext,
+      });
+    </script>
+  </body>
+</html>

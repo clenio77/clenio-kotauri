@@ -19,3 +19,6 @@ Thumbs.db
 
 # Referência técnica opcional (clone pesado); ver README para obter à parte
 _reference/
+
+# Artefatos gerados pelos e2e
+tests/fixtures/tiny.png

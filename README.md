@@ -78,12 +78,25 @@ O fluxo executa `beforeBuildCommand` (`npm run build`) e gera artefatos em `src-
 
 ## Testes e CI
 
+### E2E (Puppeteer)
+
+Valida o shell web, o painel de settings (com mock Tauri) e o contrato de entrada (colar texto/imagem, anexar arquivo, microfone), além de checagens estáticas em `lib.rs` (clipboard + media stream).
+
+```bash
+npm run test:e2e
+```
+
+Se o frontend já estiver buildado: `npm run test:e2e:run`.
+
+### Pipeline
+
 O pipeline em [`.github/workflows/ci.yml`](.github/workflows/ci.yml) roda em **push** e **pull_request** para `main` e `master`:
 
 1. Instala dependências de sistema (Ubuntu) para Tauri/WebKit.
 2. `npm ci` e `npm run build` (TypeScript + Vite).
-3. `cargo clippy` no `src-tauri` com `-D warnings`.
-4. `cargo test` no `src-tauri`.
+3. `npm run test:e2e:run` (Puppeteer).
+4. `cargo clippy` no `src-tauri` com `-D warnings`.
+5. `cargo test` no `src-tauri`.
 
 A construção completa de instaladores (`.deb`, AppImage, etc.) não faz parte do job padrão; o comentário no workflow orienta executar `npm run tauri build` localmente ou em job de release quando for publicar binários.
 
