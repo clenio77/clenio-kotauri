@@ -1,6 +1,6 @@
 [package]
 name = "kotauri"
-version = "0.1.0"
+version = "0.1.1"
 description = "Lightweight customizable Telegram Desktop client"
 authors = ["clenio"]
 edition = "2021"

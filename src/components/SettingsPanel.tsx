@@ -288,7 +288,7 @@ export default function SettingsPanel({ onClose, onSettingsChange }: SettingsPan
         </div>
 
         <div className="settings-footer">
-          <span className="version">KoTauri v0.1.0</span>
+          <span className="version">KoTauri v0.1.1</span>
         </div>
       </div>
     </div>

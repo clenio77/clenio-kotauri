@@ -27,7 +27,7 @@ O **KoTauri** separa duas superfícies: uma janela principal em WebView que carr
 | Persistência | JSON (`serde` / `serde_json`), diretório `kotauri` sob o config do usuário |
 | Tooling | `@tauri-apps/cli` ^2, TypeScript ~5.8 |
 
-Versão do projeto: **0.1.0** (veja `package.json` e `src-tauri/tauri.conf.json`).
+Versão do projeto: **0.1.1** (veja `package.json` e `src-tauri/tauri.conf.json`).
 
 ## Pré-requisitos
 
