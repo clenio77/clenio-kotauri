@@ -24,6 +24,12 @@ describe("contrato WebView (KoTauri / Telegram Web K)", () => {
     );
   });
 
+  it("tem bridge nativo para colar imagem do clipboard", () => {
+    assert.match(libRs, /kotauri\.internal\/clipboard-image/);
+    assert.match(libRs, /clipboard_image::read_clipboard_png/);
+    assert.match(libRs, /clipboard_image_bridge_js/);
+  });
+
   it("permite permission_request no WebKit", () => {
     assert.match(libRs, /connect_permission_request/);
     assert.match(libRs, /request\.allow\s*\(\s*\)/);

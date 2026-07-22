@@ -8,6 +8,7 @@ use tauri::{
 
 use crate::settings::AppSettings;
 
+pub mod clipboard_image;
 pub mod settings;
 pub mod web_selectors;
 
@@ -126,8 +127,35 @@ pub fn run() {
             ",
             )
             .on_navigation(move |url| {
-                if url.as_str().contains("kotauri.internal/open-settings") {
+                let href = url.as_str();
+                if href.contains("kotauri.internal/open-settings") {
                     let _ = app_handle_ipc.emit("open-settings", ());
+                    return false;
+                }
+                if href.contains("kotauri.internal/clipboard-image") {
+                    let app = app_handle_ipc.clone();
+                    // GTK clipboard precisa da thread principal.
+                    let app_for_eval = app.clone();
+                    let _ = app.run_on_main_thread(move || {
+                        if let Some(png) = crate::clipboard_image::read_clipboard_png() {
+                            let b64 = base64_encode(&png);
+                            if let Some(window) = app_for_eval.get_webview_window("main") {
+                                let js = crate::clipboard_image::deliver_clipboard_image_js(&b64);
+                                if let Err(e) = window.eval(&js) {
+                                    eprintln!(
+                                        "[KoTauri] falha ao injetar imagem do clipboard: {e}"
+                                    );
+                                } else {
+                                    println!(
+                                        "[KoTauri] clipboard image entregue ({} bytes)",
+                                        png.len()
+                                    );
+                                }
+                            }
+                        } else {
+                            println!("[KoTauri] clipboard sem imagem PNG/pixbuf");
+                        }
+                    });
                     return false;
                 }
                 true
@@ -258,7 +286,17 @@ fn inject_to_main(app: &tauri::AppHandle) {
             Ok(_) => println!("[KoTauri] injeção aplicada."),
             Err(e) => println!("[KoTauri] erro na injeção: {:?}", e),
         }
+
+        // Bridge de imagem do clipboard (idempotente).
+        if let Err(e) = window.eval(crate::clipboard_image::clipboard_image_bridge_js()) {
+            eprintln!("[KoTauri] falha ao instalar clipboard-image bridge: {e}");
+        }
     } else {
         println!("[KoTauri] janela 'main' não encontrada.");
     }
+}
+
+fn base64_encode(bytes: &[u8]) -> String {
+    use base64::{engine::general_purpose::STANDARD, Engine as _};
+    STANDARD.encode(bytes)
 }
